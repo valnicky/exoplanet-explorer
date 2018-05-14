@@ -75,7 +75,7 @@ Instructions:
     .then(function(planetData){
         createPlanetThumb(planetData);
     })
-    .catch(function(e)){
+    .catch(function(e){
            addSearchHeader('unknown');
            console.log(e);
   })
