@@ -38,11 +38,11 @@ Instructions:
      */
      return new Promise (function(resolve, reject){
 
-    var req = new XMLHttpRequest();
-    req.open('GET', url);
-    req.onload = function() {
-      if (req.status === 200) {
-        resolve(req.response);
+          var req = new XMLHttpRequest();
+          req.open('GET', url);
+          req.onload = function() {
+            if (req.status === 200) {
+              resolve(req.response);
         // It worked!
         // You'll want to resolve with the data from req.response
       } else {
@@ -67,14 +67,19 @@ Instructions:
     You'll need to add a .then and a .catch. Pass the response to addSearchHeader on resolve or
     pass 'unknown' to addSearchHeader if it rejects.
      */
-     get('../data/earth-like-results.json').then(function(response){
-        addSearchHeader(response);
+     getJSON('https://valnicky.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+       .then(function(response){
+        addSearchHeader(response.query);
+        console.log(response);
+        return response.results[0];
      })
+       .then(function(url){
+        console.log(url);
+       });
      .catch(function(error) {
         addSearchHeader('unknown');
         console.log(error);
      }); 
-
 
   });
 })(document);
