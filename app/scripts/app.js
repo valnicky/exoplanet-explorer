@@ -84,7 +84,7 @@ Instructions:
      })
        .then(function(url){
         console.log(url);
-       });
+       })
      .catch(function(error) {
         addSearchHeader('unknown');
         console.log(error);
