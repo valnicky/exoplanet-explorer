@@ -33,6 +33,9 @@ Instructions:
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */
   function get(url) {
+    /*return fetch(url);
+    
+  };*/
     /*
     This code needs to get wrapped in a Promise!
      */
@@ -59,6 +62,12 @@ Instructions:
     req.send();
      });
   }
+
+  function getJSON(url) {
+    return get(url).then(function(response){
+        return response.json();
+    });
+  };
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
