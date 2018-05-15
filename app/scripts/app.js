@@ -3,7 +3,7 @@ Instructions:
 (1) Wrap an XHR in a Promise in the get() function below. See: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest
   (a) Resolve on load and reject on error.
 (2) If the XHR resolves, use addSearchHeader to add the search header to the page.
-(3) If the XHR fails, console.log the error and pass 'unknown' to addSearchHeader
+(3) If the XHR fails, console.log the error.
  */
 
 // Inline configuration for jshint below. Prevents `gulp jshint` from failing with quiz starter code.
@@ -28,67 +28,37 @@ Instructions:
   }
 
   /**
-   * XHR wrapped in a promise.
+   * XHR wrapped in a promise. Credit to Jake Archibald.
    * @param  {String} url - The URL to fetch.
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */
   function get(url) {
-    /*return fetch(url);
-    
-  };*/
-    /*
-    This code needs to get wrapped in a Promise!
-     */
-     return new Promise (function(resolve, reject){
-
-          var req = new XMLHttpRequest();
-          req.open('GET', url);
-          req.onload = function() {
-            if (req.status === 200) {
-              resolve(req.response);
-        // It worked!
-        // You'll want to resolve with the data from req.response
-      } else {
-        // It failed :(
-        // Be nice and reject with req.statusText
-        reject(Error(req.statusText));
-      }
-    };
-    req.onerror = function() {
-      // It failed :(
-      // Pass a 'Network Error' to reject
-     reject(Error('Network Error'));
-    };
-    req.send();
-     });
-  }
-
-  function getJSON(url) {
-    return get(url).then(function(response){
-        return response.json();
+    return new Promise(function(resolve, reject) {
+      var req = new XMLHttpRequest();
+      req.open('GET', url);
+      req.onload = function() {
+        if (req.status === 200) {
+          resolve(req.response);
+        } else {
+          reject(Error(req.statusText));
+        }
+      };
+      req.onerror = function() {
+        reject(Error('Network Error'));
+      };
+      req.send();
     });
   }
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
-    /*
-    Uncomment the next line you're ready to start chaining and testing!
-    You'll need to add a .then and a .catch. Pass the response to addSearchHeader on resolve or
-    pass 'unknown' to addSearchHeader if it rejects.
-     */
-     getJSON('/data/earth-like-results.json')
-       .then(function(response){
-        addSearchHeader(response);
-       // console.log(response);
-       // return response.results[0];
-     })
-      // .then(function(url){
-       // console.log(url);
-       //})
-     .catch(function(error) {
-        addSearchHeader('unknown');
-        console.log(error);
-     }); 
-
+    get('../data/earth-like-results.json')
+    .then(function(response) {
+      addSearchHeader(response);
+    })
+    .catch(function(error) {
+      addSearchHeader('unknown');
+      console.log(error);
+    });
   });
 })(document);
