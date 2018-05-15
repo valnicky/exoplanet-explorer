@@ -74,11 +74,11 @@ Instructions:
       throw Error('Search Request Error');
     })
     .then(function(planetData) {
-      createPlanetThumb(planetData)
+      createPlanetThumb(planetData);
     })
     .catch(function(e) {
       addSearchHeader('unknown');
       console.log(e);
-    })
+    });
   });
 })(document);
