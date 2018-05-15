@@ -67,7 +67,7 @@ Instructions:
     return get(url).then(function(response){
         return response.json();
     });
-  };
+  }
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
@@ -76,15 +76,15 @@ Instructions:
     You'll need to add a .then and a .catch. Pass the response to addSearchHeader on resolve or
     pass 'unknown' to addSearchHeader if it rejects.
      */
-     getJSON('https://valnicky.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+     getJSON('http://valnicky.github.io/exoplanet-explorer/app/data/earth-like-results.json')
        .then(function(response){
-        addSearchHeader(response.query);
-        console.log(response);
-        return response.results[0];
+        addSearchHeader(response);
+       // console.log(response);
+       // return response.results[0];
      })
-       .then(function(url){
-        console.log(url);
-       })
+      // .then(function(url){
+       // console.log(url);
+       //})
      .catch(function(error) {
         addSearchHeader('unknown');
         console.log(error);
