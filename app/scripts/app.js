@@ -62,7 +62,7 @@ Hint: you'll probably still need to use .map.
     getJSON('../data/earth-like-results.json')
     .then(function(response) {
       var arrayOfPromises = response.results.map(function(url) {
-        getJSON(url);//or map(getJSON)
+        return getJSON(url);//or map(getJSON)
       });
       return Promise.all(arrayOfPromises);
       //addSearchHeader(response.query);
