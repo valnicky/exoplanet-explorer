@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <script>
 	'use strict';
 
@@ -89,3 +90,87 @@
     }
 	};
 </script>
+||||||| merged common ancestors
+=======
+<script>
+	'use strict';
+
+	var MathAndPhysics = {
+		tempToColor: function(temp) {
+      if (!temp) { return 'grey'; }
+
+      var color = '#ccc';
+      if (temp < 200) {
+        color = '#33f';
+      } else if (temp >= 200 && temp < 253) {
+      	color = '#99f';
+      } else if (temp >= 253 && temp < 273) {
+      	color = '#99f';
+      } else if (temp >= 273 && temp < 313) {
+      	color = '#9d9';
+      } else if (temp >= 313 && temp < 333) {
+      	color = '#d99';
+      } else if (temp >= 313 && temp < 700) {
+        color = '#f99';
+      } else if (temp >= 700) {
+        color = '#fe9';
+      }
+      return color;
+    },
+    getTemperatureInCelsius: function(tempK) {
+      if (!tempK) { return 0; };
+
+      var temp = tempK - 273;
+      return temp.toFixed(1);
+    },
+    pcToLy: function(dist) {
+      if (!dist) { return 0 };
+
+      var ly = (dist * 3.26);
+
+      return ly.toFixed(1);
+    },
+    lyToTravelTime: function(ly) {
+      if (!ly) { return ''; }
+
+      var digits = ly.toString().length;
+      var years = (ly / 0.000234).toString();
+      years = years.slice(0,digits);
+      // http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
+      return years.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    },
+    getEarthRadii: function(earthRad, jupiterRad) {
+      if (!earthRad && !jupiterRad) { return 0; }
+
+      if (earthRad) {
+        return Number(earthRad).toFixed(1);
+      } else {
+        var radii = jupiterRad * 11.2;
+        return radii.toFixed(1);;
+      }
+    },
+    getEarthMass: function(earthMass, jupiterMass) {
+      if (!earthMass && !jupiterMass) { return 0; }
+      
+      if (earthMass) {
+        return Number(earthMass).toFixed(1);
+      } else {
+        var mass = jupiterMass * 317.8;
+        return mass.toFixed(1);;
+      }
+    },
+    getGravity: function(earthRadii, earthMass) {
+      if (!earthRadii || !earthMass) { return 0; }
+
+      var gravity = earthMass / (earthRadii * earthRadii);
+      return gravity.toFixed(1);;
+    },
+    getPlanetWeight: function(earthWeight, gravity) {
+      if (!earthWeight || !gravity) { return 0; }
+
+      var weight = earthWeight * gravity;
+      return weight.toFixed(1);;
+    }
+	};
+</script>
+>>>>>>> 8609078d3dd765d6a31b51921f2123b21cfe7c2c

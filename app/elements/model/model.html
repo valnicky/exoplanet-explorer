@@ -1,0 +1,57 @@
+<script>
+  /* jshint unused: false */
+  var Model = (function() {
+  'use strict';
+
+  var exports = {};
+
+  // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Example_2_Advanced_passing_JSON_Data_and_creating_a_switching_system
+  /*
+    QueryableWorker instances methods:
+     * sendQuery(queryable function name, argument to pass 1, argument to pass 2, etc. etc): calls a Worker's queryable function
+     * postMessage(string or JSON Data): see Worker.prototype.postMessage()
+     * terminate(): terminates the Worker
+     * addListener(name, function): adds a listener
+     * removeListener(name): removes a listener
+    QueryableWorker instances properties:
+     * defaultListener: the default listener executed only when the Worker calls the postMessage() function directly
+  */
+  function QueryableWorker (sURL, fDefListener, fOnError) {
+    var oInstance = this, oWorker = new Worker(sURL), oListeners = {};
+    this.defaultListener = fDefListener || function () {};
+    oWorker.onmessage = function (oEvent) {
+      if (oEvent.data instanceof Object && oEvent.data.hasOwnProperty('vo42t30') && oEvent.data.hasOwnProperty('rnb93qh')) {
+        oListeners[oEvent.data.vo42t30].apply(oInstance, oEvent.data.rnb93qh);
+      } else {
+        this.defaultListener.call(oInstance, oEvent.data);
+      }
+    };
+    if (fOnError) { oWorker.onerror = fOnError; }
+    this.sendQuery = function (/* queryable function name, argument to pass 1, argument to pass 2, etc. etc */) {
+      if (arguments.length < 1) { throw new TypeError('QueryableWorker.sendQuery - not enough arguments'); }
+      oWorker.postMessage({ 'bk4e1h0': arguments[0], 'ktp3fm1': Array.prototype.slice.call(arguments, 1) });
+    };
+    this.postMessage = function (vMsg) {
+      oWorker.postMessage(vMsg);
+    };
+    this.terminate = function () {
+      oWorker.terminate();
+    };
+    this.addListener = function (sName, fListener) {
+      oListeners[sName] = fListener;
+    };
+    this.removeListener = function (sName) {
+      delete oListeners[sName];
+    };
+  }
+
+  exports.requests = new QueryableWorker('scripts/search-worker.js');
+
+  window.addEventListener('WebComponentsReady', function() {
+    // nothing for now
+  });
+
+  return exports;
+})();
+
+</script>

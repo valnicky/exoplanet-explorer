@@ -15,8 +15,15 @@
   "newcap": false,
   "globals": {
     "Polymer": true,
-    "MathAndPhysics": true,
     "PlanetRawData": true,
-    "Promise": true
+    "page": true,
+    "app": true,
+    "Platform": true,
+    "Promise": true,
+    "MathAndPhysics": true,
+    "CookieManager": true,
+    "Model": true,
+    "window": true,
+    "document": true
   }
 }

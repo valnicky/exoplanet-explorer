@@ -24,6 +24,13 @@ var historyApiFallback = require('connect-history-api-fallback');
 var packageJson = require('./package.json');
 var crypto = require('crypto');
 var polybuild = require('polybuild');
+var ghPages = require('gulp-gh-pages');
+
+var DIST = 'dist';
+
+var dist = function(subpath) {
+  return !subpath ? DIST : path.join(DIST, subpath);
+};
 
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
@@ -62,15 +69,22 @@ gulp.task('elements', function () {
 gulp.task('jshint', function () {
   return gulp.src([
       'app/scripts/**/*.js',
+      'app/scripts/*.js',
       'app/elements/**/*.js',
       'app/elements/**/*.html',
+<<<<<<< HEAD:gulpfile.js
       '!app/elements/behaviors/*.html'  // raw data uses *_* properties
+||||||| merged common ancestors
+      'gulpfile.js'
+=======
+      '!app/elements/behaviors/**/*.html'
+>>>>>>> 8609078d3dd765d6a31b51921f2123b21cfe7c2c:gulpfile.js
     ])
     .pipe(reload({stream: true, once: true}))
     .pipe($.jshint.extract()) // Extract JS from .html files
     .pipe($.jshint())
     .pipe($.jshint.reporter('jshint-stylish'))
-    .pipe($.if(!browserSync.active, $.jshint.reporter('fail')));
+    // .pipe($.if(!browserSync.active, $.jshint.reporter('fail')));
 });
 
 // Optimize images
@@ -94,16 +108,31 @@ gulp.task('copy', function () {
     dot: true
   }).pipe(gulp.dest('dist'));
 
+  var data = gulp.src([
+    'app/data/*',
+    'app/data/**/*'
+  ]).pipe(gulp.dest('dist/data'));
+
+  var cname = gulp.src(['CNAME']).pipe(gulp.dest('dist/'));
+
+  var worker = gulp.src(['app/scripts/search-worker.js']).pipe(gulp.dest('dist/scripts'));
+
   var bower = gulp.src([
     'bower_components/**/*'
   ]).pipe(gulp.dest('dist/bower_components'));
 
+<<<<<<< HEAD:gulpfile.js
   var data = gulp.src([
       'app/data/*',
       'app/data/**/*'
     ]).pipe(gulp.dest('dist/data'));
 
   var elements = gulp.src(['app/elements/**/*.html'])
+||||||| merged common ancestors
+  var elements = gulp.src(['app/elements/**/*.html'])
+=======
+  var elements = gulp.src(['app/elements/**/*.{html,svg}'])
+>>>>>>> 8609078d3dd765d6a31b51921f2123b21cfe7c2c:gulpfile.js
     .pipe(gulp.dest('dist/elements'));
 
   var swBootstrap = gulp.src(['bower_components/platinum-sw/bootstrap/*.js'])
@@ -113,7 +142,13 @@ gulp.task('copy', function () {
     .pipe($.rename('elements.vulcanized.html'))
     .pipe(gulp.dest('dist/elements'));
 
+<<<<<<< HEAD:gulpfile.js
   return merge(app, bower, elements, vulcanized, swBootstrap, data)
+||||||| merged common ancestors
+  return merge(app, bower, elements, vulcanized, swBootstrap, swToolbox)
+=======
+  return merge(app, data, bower, elements, vulcanized, swBootstrap, swToolbox, cname, worker)
+>>>>>>> 8609078d3dd765d6a31b51921f2123b21cfe7c2c:gulpfile.js
     .pipe($.size({title: 'copy'}));
 });
 
@@ -206,6 +241,7 @@ gulp.task('serve', ['styles', 'elements', 'images'], function () {
   gulp.watch(['app/styles/**/*.css'], ['styles', reload]);
   gulp.watch(['app/elements/**/*.css'], ['elements', reload]);
   gulp.watch(['app/{scripts,elements}/**/{*.js,*.html}'], ['jshint']);
+  gulp.watch(['app/scripts/*.js'], ['jshint']);
   gulp.watch(['app/images/**/*'], reload);
 });
 
@@ -240,6 +276,26 @@ gulp.task('default', ['clean'], function (cb) {
     ['jshint', 'images', 'fonts', 'html'],
     'vulcanize','rename-index',
     cb);
+});
+
+// Build then deploy to GitHub pages gh-pages branch
+gulp.task('build-deploy-gh-pages', function(cb) {
+  runSequence(
+    'default',
+    'deploy-gh-pages',
+    cb);
+});
+
+// Deploy to GitHub pages gh-pages branch
+gulp.task('deploy-gh-pages', function() {
+  return gulp.src(dist('**/*'))
+    // Check if running task from Travis CI, if so run using GH_TOKEN
+    // otherwise run using ghPages defaults.
+    .pipe($.if(process.env.TRAVIS === 'true', $.ghPages({
+      remoteUrl: 'https://$GH_TOKEN@github.com/polymerelements/polymer-starter-kit.git',
+      silent: true,
+      branch: 'gh-pages'
+    }), $.ghPages()));
 });
 
 // Load tasks for web-component-tester

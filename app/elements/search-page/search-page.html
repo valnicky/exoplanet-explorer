@@ -1,0 +1,272 @@
+<!--
+@license
+Copyright (c) 2015 Udacity. All rights reserved.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../behaviors/cookie-manager.html">
+
+<dom-module id="search-page">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+      code {
+        font-weight: bold;
+        font-size: 1.25em;
+      }
+      .subtext {
+        font-size: 0.75em;
+      }
+      .grey {
+        color: #727272;
+      }
+      .indent {
+        margin-left: 16px;
+        margin-right: 16px;
+      }
+      .center {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .center-text {
+        text-align: center;
+      }
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to { 
+          transform: rotate(359deg);
+        }
+      }
+      .spinner {
+        animation: rotate 2s infinite linear;
+        width: 100px;
+        display: block;
+      }
+      paper-input#custom-search {
+        max-width: 600px;
+      }
+
+      @media screen and (min-width: 601px) {
+        paper-input#custom-search {
+          margin-left: auto;
+          margin-right: auto;
+        }
+      }
+
+    </style>
+
+    <h2 class="results indent">Search</h2>
+    <p class="grey indent" hidden$="{{!numberReturned}}">{{numberReturned}} planets found</p>
+    <form is="iron-form" id="form" method="get" action$="#!/search/q={{customQuery}}">
+      <paper-input id="custom-search" hidden$="{{queryString}}" type="text" class="indent" label="Custom search" value="{{customQuery}}"></paper-input>
+    </form>
+    <paper-material hidden$="{{queryString}}">
+      <h3 class="indent">How to create a custom search</h3>
+      <p class="indent">Use comma separated queries to perform more complex searches.</p>
+      <h4 class="indent">Each part of the search should look like:</h4>
+      <p class="indent"><code>field specific-value</code></p>
+      <p class="indent center-text">or</p>
+      <p class="indent"><code>field lower-number upper-number</code></p>
+      <h4 class="indent">Examples</h4>
+      <p class="indent"><code>name kepler 22-b</code> searches for Kepler 22-b specifically.</p>
+      <p class="indent"><code>mass 0 20, method transit</code> searches for planets that:
+        <ul>
+          <li>have a mass between 0 and 20 Earth masses</li>
+          <li>and were discovered using the transit method.</li>
+        </ul>
+      </p>
+      <p class="indent"><code>pl_pnum 2, pl_disc 2005 2009, mass 100 300</code> searches for planets that:
+        <ul>
+          <li>are part of a system with only two planets</li>
+          <li>were discovered between 2005 and 2009</li>
+          <li>and have a mass 100-300 times the mass of the Sun.</li>
+        </ul>
+      </p>
+      <h4 class="indent">Possible fields</h4>
+      <ul class="indent">
+        <li><code>radius</code> (in Earth radii)</li>
+        <li><code>mass</code> (Earth masses)</li>
+        <li><code>temperature</code> (K)</li>
+        <li><code>distance</code> (lightyears)</li>
+        <li><code>name</code> (the planet's name)</li>
+        <li><code>method</code> (how it was found)</li>
+        <li><code>facility</code> (where it was found)</li>
+        <li><code>telescope</code> (name of the telescope used)</li>
+      </ul>
+      <p class="indent">or any of these</p>
+      <ul class="indent">
+        <li><code>ra</code> (degrees)</li>
+        <li><code>dec</code> (degrees)</li>
+        <li><code>pl_disc</code> (year discovered)</li>
+        <li><code>pl_dens</code> (density in g/cm<sup>3</sup>)</li>
+        <li><code>pl_pnum</code> (number of other planets in system)</li>
+        <li><code>pl_hostname</code> (host star's name)</li>
+        <li><code>hd_name</code> (star's Draper name)</li>
+        <li><code>hip_name</code> (star's Hipparcos name)</li>
+        <li><code>pl_cbflag</code> (<code>1</code> for binary stary)</li>
+        <li><code>st_age</code> (star's age in billions of years)</li>
+        <li><code>st_mass</code> (star's mass in Solar masses)</li>
+        <li><code>st_rad</code> (star's radius in Solar radii)</li>
+        <li><code>st_teff</code> (star's temperature)</li>
+        <li><code>st_optmag</code> (star's optical magnitude)</li>
+        <li><code>pl_orbeccen</code> (eccentricity)</li>
+        <li><code>pl_orbper</code> (orbital period in days)</li>
+      </ul>
+      
+    </paper-material>
+    <img hidden$="{{hideSpinner}}" src="/images/venus.svg" class="spinner center">
+    <div class="search-results"></div>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'search-page',
+        behaviors: [CookieManager],
+        attached: function() {
+          var self = this;
+          self.resultsContainer = self.querySelector('.search-results');
+
+          function reactToDbResponse(planets) {
+            // prep the space for search results
+            self.resultsContainer.innerHTML = '';
+            self.hideSpinner = true;
+
+            // react to state of response from db
+            if (planets.error) {
+              // there's an error
+              self.resultsContainer.innerText = 'Something went wrong :(';
+            } else if (planets.nosearch) {
+              // no search happened
+              self.resultsContainer.innerHTML = '';
+              self.queryString = '';
+            } else if (planets.length === 0) {
+              // no planets found
+              self.numberReturned = planets.length;
+              self.resultsContainer.innerText = 'No planets found. Try widening your search!';
+            } else {
+              // found planets
+              self.numberReturned = planets.length;
+              self.renderThumbnails(planets);
+            }
+          }
+
+          // getting ready for search results
+          Model.requests.addListener('returnedQuery', reactToDbResponse);
+
+          // filling in previous search values
+          self.initCookie(document.querySelector('#query-cookie'));
+          self.whenCookieReady().then(function() {
+            self.customQuery = self.getCookieValues(['customQuery']).customQuery || '';
+          });
+        },
+        reactToUrl: function() {
+          var self = this;
+
+          if (!this.queryString) {
+            // nothing is there
+            this.resultsContainer.innerHTML = '';
+            this.hideSpinner = true;
+          } else if (this.queryString === 'how') {
+            // basically the same as nothing
+            this.numberReturned = 0;
+            this.resultsContainer.innerHTML = '';
+            this.queryString = false;
+            this.hideSpinner = true;
+          } else {
+            // there's an actual query in the URL
+            this.hideSpinner = false;
+            // save the input in a cookie
+            Model.requests.sendQuery('query', this.queryString);
+            if (this.queryString.indexOf('q=') > -1) {
+              self.updateCookieValues({customQuery: self.queryString.replace('q=', '')});
+            }
+          }
+        },
+        renderThumbnails: function(planets) {
+          var self = this;
+
+          function createPlanetThumb(planet) {
+            var pT = document.createElement('planet-thumb');
+            for (var d in planet.data) {
+              pT[d] = planet.data[d];
+            }
+            self.resultsContainer.appendChild(pT);
+          }
+
+          function checkNeedMoreThumbs() {
+            var scroller = document.querySelector('paper-scroll-header-panel').scroller;
+            var interval = window.setInterval(function() {
+              var scrollDepth = scroller.scrollTop;
+              if (scrollDepth > (4000 * self._holdingPen.batch)) {
+                var newThumbs = self._holdingPen.pen.splice(0,20);
+                self.renderThumbnails(newThumbs);
+                self._holdingPen.batch += 1;
+              }
+              if (self._holdingPen.pen.length === 0) {
+                window.clearInterval(interval);
+              }
+            }, 1000);
+          }
+
+          planets.forEach(function (planet, index) {
+            if (index < 30) {
+              createPlanetThumb(planet);
+            } else if (index === 30) {
+              createPlanetThumb(planet);
+              if (self._holdingPen.pen.length === 0) {
+                checkNeedMoreThumbs();
+              }
+            } else if (index >= 30) {
+              self._holdingPen.pen.push(planet);
+            }
+          });
+        },
+        properties: {
+          _holdingPen: {
+            type: Object,
+            value: {
+              pen: [],
+              batch: 1
+            }
+          },
+          numberReturned: {
+            type: Number,
+            notify: true,
+            value: 0
+          },
+          queryDisplay: {
+            type: String,
+            notify: true,
+            value: 'Nothing yet! Try searching'
+          },
+          resultsContainer: {
+            type: Object,
+            notify: true
+          },
+          hideSpinner: {
+            type: Boolean,
+            notify: true,
+            value: true
+          },
+          queryString: {
+            type: String,
+            notify: true,
+            observer: 'reactToUrl'
+          },
+          customQuery: {
+            type: String,
+            notify: true
+          }
+        }
+      });
+    })();
+  </script>
+
+</dom-module>

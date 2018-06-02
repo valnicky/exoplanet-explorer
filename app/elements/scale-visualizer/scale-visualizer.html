@@ -10,7 +10,12 @@ Copyright (c) 2015 Udacity. All rights reserved.
     <style>
       :host {
         display: block;
+<<<<<<< HEAD:app/elements/scale-visualizer/scale-visualizer.html
         max-width: 300px;
+||||||| merged common ancestors
+=======
+        width: 300px;
+>>>>>>> 8609078d3dd765d6a31b51921f2123b21cfe7c2c:app/elements/scale-visualizer/scale-visualizer.html
       }
       svg {
         display: block;
@@ -22,7 +27,12 @@ Copyright (c) 2015 Udacity. All rights reserved.
       }
       .wrapper {
         background: #000000;
+<<<<<<< HEAD:app/elements/scale-visualizer/scale-visualizer.html
         min-width: 260px;
+||||||| merged common ancestors
+=======
+        width: 300px;
+>>>>>>> 8609078d3dd765d6a31b51921f2123b21cfe7c2c:app/elements/scale-visualizer/scale-visualizer.html
       }
       .planet-comparison {
         width: 100%;
@@ -67,6 +77,17 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
       Polymer({
         is: 'scale-visualizer',
+        ready: function() {
+          var self = this;
+          this.changeSizes();
+          window.addEventListener('resize', function() { self.windowResize(); });
+        },
+        windowResize: function() {
+          this.changeSizes();
+        },
+        attached: function() {
+          this.changeSizes();
+        },
         properties: {
           earthRadii: {
             type: Number,
@@ -113,6 +134,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
             value: 'grey'
           }
         },
+<<<<<<< HEAD:app/elements/scale-visualizer/scale-visualizer.html
         ready: function() {
           var self = this;
           this.changeSizes();
@@ -124,6 +146,25 @@ Copyright (c) 2015 Udacity. All rights reserved.
         attached: function() {
           this.changeSizes();
         },
+||||||| merged common ancestors
+        ready: function() {
+          var self = this;
+          window.addEventListener('resize', function() { self.windowResize(); });
+        },
+        windowResize: function() {
+          this.changeSizes();
+        },
+        attached: function() {
+          this.changeSizes();
+        },
+        computeComparisonDimensions: function() {
+          let elementDimensions = this.querySelector('.planet-comparison').getBoundingClientRect();
+          this.elementWidth = elementDimensions.width;
+          this.elementHeight = elementDimensions.height;
+          this.comparisonWidth = this.elementWidth / 3;
+        },
+=======
+>>>>>>> 8609078d3dd765d6a31b51921f2123b21cfe7c2c:app/elements/scale-visualizer/scale-visualizer.html
         hasRadius: function(earthRadii) {
           if (earthRadii > 0) {
             return true;

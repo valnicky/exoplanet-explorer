@@ -4,7 +4,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../behaviors/math-and-physics.html">
-<link rel="import" href="../behaviors/planet-raw-data.html">
 
 <dom-module id="planet-thumb">
   <template>
@@ -26,6 +25,12 @@ Copyright (c) 2015 Udacity. All rights reserved.
         margin-right: auto;
         max-width: 300px;
       }
+      @media screen and (max-width: 600px) {
+        .indent-xs {
+          margin-left: 16px;
+          margin-right: 16px;
+        }
+      }
       @media screen and (max-width: 435px) {
         .vis {
           max-width: 75%;
@@ -44,15 +49,10 @@ Copyright (c) 2015 Udacity. All rights reserved.
         .top-right {
           padding-left: 32px;
         }
-        .title {
-          margin-top: 0px;
-          font-weight: bold;
-          font-size: 1.2em;
-        }
       }
     </style>
     <paper-material elevation="1">
-      <a href$="/planet/{{pl_name}}">
+      <a href$="/planet/{{encodeURIComponent(pl_name)}}">
         <div class="layout vertical">
           <div class="vis">
             <scale-visualizer
@@ -62,9 +62,9 @@ Copyright (c) 2015 Udacity. All rights reserved.
             </scale-visualizer>
           </div>
           <div class="top-right">
-            <p class="title">{{pl_name}}</p>
-            <p>{{distance}} lightyears away</p>
-            <p>Discovered in {{pl_disc}} with {{pl_telescope}}</p>
+            <h4 class="indent-xs">{{pl_name}}</h4>
+            <p hidden$="{{!distance}}" class="indent-xs">{{distance}} lightyears away</p>
+            <p class="indent-xs">Discovered in {{pl_disc}} with {{pl_telescope}}</p>
           </div>
         </div>
       </a>
@@ -77,7 +77,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
       Polymer({
         is: 'planet-thumb',
-        behaviors: [MathAndPhysics, PlanetRawData],
+        behaviors: [MathAndPhysics],
         properties: {
           earthRadii: {
             type: Number,
@@ -87,8 +87,16 @@ Copyright (c) 2015 Udacity. All rights reserved.
           },
           distance: {
             type: Number,
+<<<<<<< HEAD:app/elements/planet-thumb/planet-thumb.html
             notify: true,
             computed: 'pcToLy(st_dist)'
+||||||| merged common ancestors
+            computed: 'pcToLy(st_dist)'
+=======
+            notify: true,
+            computed: 'pcToLy(st_dist)',
+            value: 0
+>>>>>>> 8609078d3dd765d6a31b51921f2123b21cfe7c2c:app/elements/planet-thumb/planet-thumb.html
           },
           color: {
             type: String,
@@ -96,6 +104,10 @@ Copyright (c) 2015 Udacity. All rights reserved.
             computed: 'tempToColor(pl_eqt)',
             value: 'grey'
           }
+        },
+        encodeURIComponent: function(str) {
+          var encoded = encodeURIComponent(str);
+          return encoded;
         }
       });
     })();
