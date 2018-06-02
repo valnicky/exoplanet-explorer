@@ -67,7 +67,7 @@ Instructions:
       var sequence = Promise.resolve();
 
       response.results.forEach(function(url) {
-        sequence = sequence.then(function(){
+        sequence.then(function(){
           return getJSON(url)
         })
         .then(createPlanetThumb);
