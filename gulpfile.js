@@ -72,13 +72,9 @@ gulp.task('jshint', function () {
       'app/scripts/*.js',
       'app/elements/**/*.js',
       'app/elements/**/*.html',
-<<<<<<< HEAD:gulpfile.js
-      '!app/elements/behaviors/*.html'  // raw data uses *_* properties
-||||||| merged common ancestors
-      'gulpfile.js'
-=======
+      '!app/elements/behaviors/*.html',  // raw data uses *_* properties
+      'gulpfile.js',
       '!app/elements/behaviors/**/*.html'
->>>>>>> 8609078d3dd765d6a31b51921f2123b21cfe7c2c:gulpfile.js
     ])
     .pipe(reload({stream: true, once: true}))
     .pipe($.jshint.extract()) // Extract JS from .html files
@@ -121,18 +117,13 @@ gulp.task('copy', function () {
     'bower_components/**/*'
   ]).pipe(gulp.dest('dist/bower_components'));
 
-<<<<<<< HEAD:gulpfile.js
+
   var data = gulp.src([
       'app/data/*',
       'app/data/**/*'
     ]).pipe(gulp.dest('dist/data'));
 
   var elements = gulp.src(['app/elements/**/*.html'])
-||||||| merged common ancestors
-  var elements = gulp.src(['app/elements/**/*.html'])
-=======
-  var elements = gulp.src(['app/elements/**/*.{html,svg}'])
->>>>>>> 8609078d3dd765d6a31b51921f2123b21cfe7c2c:gulpfile.js
     .pipe(gulp.dest('dist/elements'));
 
   var swBootstrap = gulp.src(['bower_components/platinum-sw/bootstrap/*.js'])
@@ -142,13 +133,10 @@ gulp.task('copy', function () {
     .pipe($.rename('elements.vulcanized.html'))
     .pipe(gulp.dest('dist/elements'));
 
-<<<<<<< HEAD:gulpfile.js
   return merge(app, bower, elements, vulcanized, swBootstrap, data)
-||||||| merged common ancestors
   return merge(app, bower, elements, vulcanized, swBootstrap, swToolbox)
-=======
+
   return merge(app, data, bower, elements, vulcanized, swBootstrap, swToolbox, cname, worker)
->>>>>>> 8609078d3dd765d6a31b51921f2123b21cfe7c2c:gulpfile.js
     .pipe($.size({title: 'copy'}));
 });
 
